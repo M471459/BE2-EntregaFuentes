@@ -1,0 +1,155 @@
+use("baseCRUD");
+
+// db.createCollection("mascotas")
+
+// db.mascotas.insertOne({nombre:"Boby",especie:"Perro",edad:1})
+
+// db.mascotas.insertMany([{nombre:"Firulais",especie:"Perro", edad:2}, {nombre:"Garfiel",especie:"Gato", edad:4}])
+
+// db.mascotas.find();
+
+// db.mascotas.insertOne({
+//   nombre: "Trufa",
+//   especie: "Perro",
+//   edad: 1,
+//   TieneDueno: true,
+// });
+
+// db.mascotas.find({especie:"Perro"})
+// db.createCollection("estudiantes");
+
+// db.estudiantes.insertMany([
+//   {
+//     nombre: "Carlos",
+//     apellido: "Gómez",
+//     curso: "Matemáticas",
+//     edad: 20,
+//     correo: "carlos.gomez@example.com",
+//     sexo: "Masculino",
+//   },
+//   {
+//     nombre: "María",
+//     apellido: "López",
+//     curso: "Literatura",
+//     edad: 22,
+//     correo: "maria.lopez@example.com",
+//     sexo: "Femenino",
+//   },
+//   {
+//     nombre: "Ana",
+//     apellido: "Martínez",
+//     curso: "Historia",
+//     edad: 19,
+//     correo: "ana.martinez@example.com",
+//     sexo: "Femenino",
+//   },
+//   {
+//     nombre: "Pedro",
+//     apellido: "Fernández",
+//     curso: "Ciencias",
+//     edad: 21,
+//     correo: "pedro.fernandez@example.com",
+//     sexo: "Masculino",
+//   },
+//   {
+//     nombre: "Lucía",
+//     apellido: "Ramírez",
+//     curso: "Filosofía",
+//     edad: 23,
+//     correo: "lucia.ramirez@example.com",
+//     sexo: "Femenino",
+//   },
+// ]);
+
+// db.estudiantes.insertOne({
+//   nombre: "Juan",
+//   apellido: "Perez",
+//   curso: "Filosofía",
+// });
+
+db.estudiantes.find();
+
+// db.estudiantes.find({ sexo: "Masculino" });
+
+// db.estudiantes.find({ sexo: "Femenino" });
+
+// db.estudiantes.count()
+
+// db.estudiantes.countDocuments({ sexo: "Femenino", curso: "Filosofía" });
+
+// db.estudiantes.find({}, { nombre: 1, curso: 1 });
+
+// db.estudiantes.find().sort({ nombre: -1 });
+
+// db.estudiantes.find().sort({ nombre: 1 }).skip(3)
+
+// db.estudiantes.find().sort({ nombre: 1 }).limit(2)
+
+// db.estudiantes.find();
+// db.estudiantes.find().sort({ nombre: 1 }).skip(2).limit(2);
+
+// db.estudiantes.insertMany([
+//   {
+//     nombre: "Carlos",
+//     apellido: "Gómez",
+//     curso: "Matemáticas",
+//     edad: 20,
+//     correo: "carlos.gomez@example.com",
+//     sexo: "Masculino",
+//   },
+//   {
+//     nombre: "María",
+//     apellido: "López",
+//     curso: "Literatura",
+//     edad: 22,
+//     correo: "maria.lopez@example.com",
+//     sexo: "Femenino",
+//   },
+//   {
+//     nombre: "Ana",
+//     apellido: "Martínez",
+//     curso: "Historia",
+//     edad: 19,
+//     correo: "ana.martinez@example.com",
+//     sexo: "Femenino",
+//   },
+//   {
+//     nombre: "Pedro",
+//     apellido: "Fernández",
+//     curso: "Ciencias",
+//     edad: 21,
+//     correo: "pedro.fernandez@example.com",
+//     sexo: "Masculino",
+//   },
+//   {
+//     nombre: "Lucía",
+//     apellido: "Ramírez",
+//     curso: "Filosofía",
+//     edad: 23,
+//     correo: "lucia.ramirez@example.com",
+//     sexo: "Femenino",
+//   },
+//   {
+//     nombre: "Sofía",
+//   },
+// ]);
+
+// db.estudiantes.find()
+// db.estudiantes.find({},{nombre:1,curso:1,sexo:1}).sort({nombre:1})
+//  db.estudiantes.find({},{nombre:1,curso:1,sexo:1}).sort({nombre:1}).skip(3).limit(5)
+
+db.estudiantes.updateOne(
+  { _id: "6686a6df2764193183348866" },
+  { $set: { apellido: "Fuentes" } }
+);
+
+// db.estudiantes.find();
+
+// db.estudiantes.find({ _id: ObjectId("6686a6df2764193183348866") });
+
+// db.estudiantes.updateOne(
+//   { _id: ObjectId("6686a6df2764193183348866") },
+//   { $set: { apellido: "Fuentes" } }
+// );
+
+db.estudiantes.deleteOne({ _id: ObjectId("6686a6df2764193183348866") });
