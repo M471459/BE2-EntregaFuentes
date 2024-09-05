@@ -91,17 +91,13 @@ sessionRouter.post(
   });
 });
 */
-sessionRouter.get(
-  "/usuario",
-  passport.authenticate("current", { session: false }),
-  (req, res) => {
-    res.setHeader("Content-Type", "application/json");
-    res.status(200).json({
-      mensaje: "Perfil usuario",
-      datosUsuario: req.user,
-    });
-  }
-);
+sessionRouter.get("/usuario", passportCall("current"), (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.status(200).json({
+    mensaje: "Perfil usuario",
+    datosUsuario: req.user,
+  });
+});
 
 sessionRouter.get("/github", passportCall("github"), (req, res) => {
   let token = jwt.sign(req.user, config.SECRET, {
