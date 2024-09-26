@@ -6,11 +6,22 @@ export const usuariosModelo = mongoose.model(
     {
       first_name: { type: String },
       last_name: { type: String },
+      full_name: { type: String },
       email: { type: String, unique: true },
       age: { type: Number },
       password: { type: String, required: true },
       cart: { type: mongoose.Schema.Types.ObjectId, ref: "carts" },
       role: { type: String, default: "user" },
+      pedidos: {
+        type: [
+          {
+            nroOrden: {
+              type: mongoose.Schema.Types.ObjectId,
+              ref: "ticket",
+            },
+          },
+        ],
+      },
     },
     {
       timestamps: true,

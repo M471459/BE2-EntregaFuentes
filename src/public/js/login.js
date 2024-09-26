@@ -35,7 +35,7 @@ btnSubmit.addEventListener("click", async (e) => {
 
   if (respuesta.ok) {
     alert(datos.payload); // Muestra la alerta con el mensaje
-    window.location.href = "/api/sessions/usuario"; // Redirige a la página deseada
+    window.location.href = "/api/sessions/current"; // Redirige a la página deseada
   } else {
     alert(datos.error);
     return; // Maneja errores
@@ -44,10 +44,9 @@ btnSubmit.addEventListener("click", async (e) => {
   // localStorage.setItem("token", datos.token)
 });
 
-let divDatos = document.getElementById("datos");
-let btnDatos = document.getElementById("btnDatos");
-btnDatos.addEventListener("click", async (e) => {
-  let respuesta = await fetch("/api/sessions/usuario", {
+//let btnDatos = document.getElementById("btnDatos");
+//btnDatos.addEventListener("click", async (e) => {
+/*let respuesta = await fetch("/api/sessions/usuario", {
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
@@ -59,4 +58,4 @@ btnDatos.addEventListener("click", async (e) => {
   } catch (error) {
     divDatos.textContent = "Error...!!!";
   }
-});
+});*/

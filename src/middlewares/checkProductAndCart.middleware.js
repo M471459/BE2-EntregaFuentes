@@ -1,6 +1,6 @@
 import { request, response } from "express";
-import productDao from "../dao/product.dao.js";
-import cartDao from "../dao/cart.dao.js";
+import { productDAO } from "../dao/productDAO.js";
+import { cartDAO } from "../dao/cartDAO.js";
 
 export const checkProductAndCart = async (
   req = request,
@@ -9,13 +9,13 @@ export const checkProductAndCart = async (
 ) => {
   try {
     const { cid, pid } = req.params;
-    const product = await productDao.getById(pid);
+    const product = await productDAO.getBy({ _id: pid });
     if (!product)
       return res
         .status(404)
         .json({ status: "error", msg: "Producto no encontrado" });
 
-    const cart = await cartDao.getbyId(cid);
+    const cart = await cartDAO.getBy({ _id: cid });
     if (!cart)
       return res
         .status(404)

@@ -19,7 +19,7 @@ btnRegister.addEventListener("click", async (e) => {
   let body = {
     email: inputEmail.value.trim(),
     password: inputPassword.value.trim(),
-    firs_name: inputFirstName.value.trim(),
+    first_name: inputFirstName.value.trim(),
     last_name: inputLastName.value.trim(),
     age: inputAge.value.trim(),
     role: inputRole.value.trim(),
@@ -33,12 +33,15 @@ btnRegister.addEventListener("click", async (e) => {
     body: JSON.stringify(body),
   });
   let datos = await respuesta.json();
-  console.log(datos);
   if (respuesta.status >= 400) {
     alert(datos.error);
     return;
   }
-  alert(`Registro exitoso...!!! ${JSON.stringify(datos.usuarioRegistrado)}`);
+  alert(
+    `Registro exitoso...!!! Bienvenido ${JSON.stringify(
+      datos.usuarioRegistrado.full_name
+    )}`
+  );
   // localStorage.setItem("token", datos.token)
 });
 /*

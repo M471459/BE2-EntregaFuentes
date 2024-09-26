@@ -5,6 +5,7 @@ import { UsuariosDAO } from "../dao/UsuariosDAO.js";
 import { generaHash, validaPass } from "../utils.js";
 import passportJWT from "passport-jwt";
 import config from "../config/env.config.js";
+import { UsuariosDTO } from "../dto/usuariosDTO.js";
 
 const buscarToken = (req) => {
   let token = null;
@@ -27,14 +28,12 @@ export const iniciaPassport = () => {
       },
       async (req, username, password, done) => {
         try {
-          let { first_name, last_name, age, role } = req.body;
-          /*if(!nombre){
-                        // res.setHeader('Content-Type','application/json');
-                        // return res.status(400).json({error:``})
-                        console.log("falta nombre")
-                        return done(null, false)
-                    }
-                    // validaciones que requieran...*/
+          //let { nombre, apellido, edad, rol } = req.body;
+
+          // fullName, firstName... rol
+          let usuarioParaDB = req.body;
+          console.log(usuarioParaDB);
+
           let existe = await UsuariosDAO.getBy({ email: username });
           if (existe) {
             console.log("usuario repetido");
@@ -42,14 +41,16 @@ export const iniciaPassport = () => {
           }
 
           let nuevoUsuario = await UsuariosDAO.create({
-            email: username,
-            first_name,
-            last_name,
-            age,
-            role,
-            password: generaHash(password),
+            email: usuarioParaDB.email,
+            last_name: usuarioParaDB.last_name,
+            first_name: usuarioParaDB.first_name,
+            full_name: usuarioParaDB.full_name,
+            age: usuarioParaDB.age,
+            role: usuarioParaDB.role,
+            password: generaHash(usuarioParaDB.password),
           });
-          return done(null, nuevoUsuario);
+          const usuarioRegistrado = new UsuariosDTO(nuevoUsuario);
+          return done(null, usuarioRegistrado);
         } catch (error) {
           return done(error);
         }
@@ -69,7 +70,7 @@ export const iniciaPassport = () => {
           let usuario = await UsuariosDAO.getBy({ email: username });
           if (!usuario) {
             console.log("usuario invalido");
-            return done(null, false, { message: "Usuario no registrado" });
+            return done(null, false, { message: "Login failed!" });
           }
 
           if (!validaPass(password, usuario.password)) {

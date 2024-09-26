@@ -1,20 +1,29 @@
 import { Router } from "express";
 import passport from "passport";
-import jwt from "jsonwebtoken";
-import config from "../config/env.config.js";
 import { passportCall } from "../utils.js";
+import SessionController from "../controllers/SessionController.js";
 
 export const sessionRouter = Router();
 
 //sessionRouter.use(passport.authenticate("jwt", { session: false }));
 
-sessionRouter.get("/error", (req, res) => {
+sessionRouter.get("/error", SessionController.getError);
+/*sessionRouter.get("/error", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   return res.status(400).json({ error: `Error en passport... :(` });
 });
-
+*/
 // 3) autenticar la estrategia en el router de sessions (en la ruta...)
+
 sessionRouter.post(
+  "/registro",
+  passport.authenticate("registro", {
+    failureRedirect: "/api/sessions/error",
+    session: false,
+  }),
+  SessionController.Register
+);
+/*sessionRouter.post(
   "/registro",
   passport.authenticate("registro", {
     failureRedirect: "/api/sessions/error",
@@ -30,8 +39,10 @@ sessionRouter.post(
     });
   }
 );
+*/
 
-sessionRouter.post("/login", passportCall("login"), (req, res) => {
+sessionRouter.post("/login", passportCall("login"), SessionController.Login);
+/*sessionRouter.post("/login", passportCall("login"), (req, res) => {
   let token = jwt.sign(req.user, config.SECRET, {
     expiresIn: "1h",
   });
@@ -45,7 +56,7 @@ sessionRouter.post("/login", passportCall("login"), (req, res) => {
     .status(200)
     .json({ payload: "login exitoso", usuarioLogueado: req.user });
 });
-
+*/
 /*
 sessionRouter.post(
   "/login",
@@ -91,15 +102,20 @@ sessionRouter.post(
   });
 });
 */
-sessionRouter.get("/usuario", passportCall("current"), (req, res) => {
+sessionRouter.get(
+  "/current",
+  passportCall("current"),
+  SessionController.getPerfil
+);
+/*sessionRouter.get("/usuario", passportCall("current"), (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.status(200).json({
     mensaje: "Perfil usuario",
     datosUsuario: req.user,
   });
 });
-
-sessionRouter.get("/github", passportCall("github"), (req, res) => {
+*/
+/*sessionRouter.get("/github", passportCall("github"), (req, res) => {
   let token = jwt.sign(req.user, config.SECRET, {
     expiresIn: "1h",
   });
@@ -113,12 +129,12 @@ sessionRouter.get("/github", passportCall("github"), (req, res) => {
     .status(200)
     .json({ payload: "login exitoso", usuarioLogueado: req.user });
 });
-
+*/
 /*sessionRouter.get(
   "/github",
   passport.authenticate("github", {}),
   (req, res) => {}
-);*/
+);
 
 sessionRouter.get(
   "/callbackGithub",
@@ -140,5 +156,5 @@ sessionRouter.get(
     });
   }
 );
-
+*/
 export default sessionRouter;
