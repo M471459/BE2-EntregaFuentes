@@ -42,14 +42,16 @@ export const iniciaPassport = () => {
 
           let nuevoUsuario = await UsuariosDAO.create({
             email: usuarioParaDB.email,
-            last_name: usuarioParaDB.last_name,
-            first_name: usuarioParaDB.first_name,
-            full_name: usuarioParaDB.full_name,
-            age: usuarioParaDB.age,
+            last_name: usuarioParaDB.nombre,
+            first_name: usuarioParaDB.apellido,
+            //full_name: usuarioParaDB.full_name,
+            age: usuarioParaDB.edad,
             role: usuarioParaDB.role,
             password: generaHash(usuarioParaDB.password),
           });
           const usuarioRegistrado = new UsuariosDTO(nuevoUsuario);
+          console.log(usuarioRegistrado);
+
           return done(null, usuarioRegistrado);
         } catch (error) {
           return done(error);

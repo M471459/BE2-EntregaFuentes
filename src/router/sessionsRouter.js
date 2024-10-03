@@ -16,7 +16,7 @@ sessionRouter.get("/error", SessionController.getError);
 // 3) autenticar la estrategia en el router de sessions (en la ruta...)
 
 sessionRouter.post(
-  "/registro",
+  "/register",
   passport.authenticate("registro", {
     failureRedirect: "/api/sessions/error",
     session: false,

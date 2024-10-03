@@ -4,41 +4,42 @@ import { NegociosDAO } from "../dao/NegociosDAO.js";
 import { ticketDAO } from "../dao/ticketDAO.js";
 import { procesaErrores } from "../utils.js";
 import { productDAO } from "../dao/productDAO.js";
+import { cartService } from "../repository/CartService.js";
+import { productsService } from "../repository/ProductService.js";
 
 async function getCartsAll(req, res) {
+  let carts = await cartService.getCartsAll();
   try {
-    const carts = await cartDAO.getAll();
-    res.send(carts);
-    return carts;
-  } catch (error) {
-    console.log(error);
+    return res.status(200).json({ status: "OK", carts });
+  } catch {
     res
       .status(500)
-      .json({ status: "error", msg: "Error interno del servidor" });
+      .json({ status: "Error", msg: "Error interno del servidor" });
   }
 }
 
 async function getCartBy(req, res) {
+  const { id } = req.params;
+  let cart = await cartService.getCartBy(id);
   try {
-    const { id } = req.params;
-    const cartFound = await cartDAO.getBy({ _id: id });
-    if (!cartFound)
+    if (cart === null) {
+      console.log(cart);
       return res.status(404).json({
-        status: "error",
-        msg: `No existe el carrito con el id ${id}`,
+        error: "No existe el carrito",
       });
-    res.status(200).json({ status: "ok", cartFound });
-  } catch (error) {
-    console.log(error);
+    }
+    return res.status(200).json({ cart });
+  } catch {
     res
       .status(500)
-      .json({ status: "error", msg: "Error interno del servidor" });
+      .json({ status: "Error", msg: "Error interno del servidor" });
   }
 }
 
 async function createCart(req, res) {
+  const body = req.body;
+  let cart = await cartService.createCart(body);
   try {
-    const cart = await cartDAO.create();
     res.status(201).json({ status: "ok", cart });
   } catch (error) {
     console.log(error);
@@ -49,9 +50,9 @@ async function createCart(req, res) {
 }
 
 async function AddProducttoCart(req, res) {
+  const { cid, pid } = req.params;
+  let cart = await cartService.addProductToCart(cid, pid);
   try {
-    const { cid, pid } = req.params;
-    const cart = await cartDAO.addProductToCart(cid, pid);
     res.status(201).json({ status: "ok", cart });
   } catch (error) {
     console.log(error);
@@ -68,18 +69,20 @@ async function Checkout(req, res) {
   let { uid } = req.user._id;
   let usuario = await UsuariosDAO.getBy({ _id: req.user._id });
   //console.log(usuario);
-  const cartFound = await cartDAO.getBy({ _id: cid });
+  const cartFound = await cartService.getCartBy({ _id: cid });
   //console.log(cartFound.products);
   let pedido = cartFound.products;
   //console.log(pedido);
-  const productos = await productDAO.getAll();
+  const productos = await productsService.getProducts();
 
   try {
     let error = false;
     let detalleError = [];
     let productosNoAgregados = [];
     for (const item of pedido) {
-      const producto = await productDAO.getBy({ _id: item.product });
+      const producto = await productsService.getProductBy({
+        _id: item.product,
+      });
       if (producto) {
         let pid = producto._id;
         if (item.quantity > producto.stock) {
@@ -92,14 +95,14 @@ async function Checkout(req, res) {
             descrip: `Estos productos no fueron agregados por no tener stock ${productosNoAgregados}`,
           });*/
         } else {
-          await productDAO.update(pid, {
+          await productsService.updateProduct(pid, {
             $inc: { stock: -item.quantity },
           });
           item.descrip = producto.title;
           item.cantidad = item.quantity;
           item.precio = producto.price;
           item.subtotal = producto.price * item.quantity;
-          await cartDAO.deleteProductInCart(pid);
+          await cartService.deleteProductInCart(pid);
         }
       } else {
         error = true;
@@ -142,7 +145,9 @@ async function Checkout(req, res) {
       productosNoAgregados.includes(item.product)
     );
 
-    await cartDAO.update(cartFound._id, { products: cartFound.products });
+    await cartService.updateCart(cartFound._id, {
+      products: cartFound.products,
+    });
 
     return res.status(201).json({ orden: nuevaOrden, carrito: cartFound });
   } catch (error) {
@@ -166,9 +171,9 @@ async function updateProductinCart(req, res) {
 }
 
 async function deleteProductInCart(req, res) {
+  const { cid, pid } = req.params;
   try {
-    const { cid, pid } = req.params;
-    const cart = await cartDAO.deleteProductInCart(cid, pid);
+    const cart = await cartService.deleteProductInCart(cid, pid);
     res.status(201).json({ status: "ok", cart });
   } catch (error) {
     console.log(error);
@@ -179,15 +184,17 @@ async function deleteProductInCart(req, res) {
 }
 
 async function deleteAllProductsInCart(req, res) {
+  let cart = await cartService.deleteAllProductsinCart(req, res);
   try {
-    const { cid } = req.params;
-    const cart = await cartDAO.getBy({ _id: cid });
-    if (!cart)
-      return res
-        .status(404)
-        .json({ status: "error", msg: "carrito no encontrado" });
-    const cartResponse = await cartDAO.deleteAllProductsInCart(cid);
-    res.status(201).json({ status: "ok", cart: cartResponse });
+    if (cart === null)
+      return res.status(404).json({
+        status: "error",
+        msg: `No existe el carrito`,
+      });
+    return res.status(200).json({
+      status: "OK",
+      msg: `Los Productos han sido eliminados con éxito`,
+    });
   } catch (error) {
     console.log(error);
     res

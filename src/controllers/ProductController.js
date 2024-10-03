@@ -1,30 +1,19 @@
 //import { ProductService } from "../repository/ProductService.js";
 import { productDAO } from "../dao/productDAO.js";
+import { productsService } from "../repository/ProductService.js";
 
 async function getProductsAll(req, res) {
+  const { limit, page, sort, category, status } = req.query;
+  let products = await productsService.getProducts(
+    limit,
+    page,
+    sort,
+    category,
+    status
+  );
   try {
-    const { limit, page, sort, category, status } = req.query;
-    const options = {
-      limit: limit || 10,
-      page: page || 1,
-      sort: {
-        price: sort === "asc" ? 1 : -1,
-      },
-    };
-
-    if (status) {
-      const products = await productDAO.getAll({ status }, options);
-      return res.status(200).json({ status: "OK", products });
-    }
-
-    if (category) {
-      const products = await productDAO.getAll({ category }, options);
-      return res.status(200).json({ status: "OK", products });
-    }
-    const products = await productDAO.getAll({}, options);
-    res.status(200).json({ status: "OK", products });
-  } catch (error) {
-    console.log(error);
+    return res.status(200).json({ status: "OK", products });
+  } catch {
     res
       .status(500)
       .json({ status: "Error", msg: "Error interno del servidor" });
@@ -32,34 +21,29 @@ async function getProductsAll(req, res) {
 }
 
 async function getProductBy(req, res) {
+  const { id } = req.params;
+  let product = await productsService.getProductBy(id);
   try {
-    const { id } = req.params;
-    const productFound = await productDAO.getBy({
-      _id: id,
-    });
-    if (!productFound)
+    if (product === null) {
       return res.status(404).json({
-        status: "error",
-        msg: `No existe el servicio con el id ${id}`,
+        error: "No existe el producto",
       });
-    res.status(200).json({ status: "ok", productFound });
-  } catch (error) {
-    console.log(error);
+    }
+    return res.status(200).json({ product });
+  } catch {
     res
       .status(500)
-      .json({ status: "error", msg: "Error interno del servidor" });
+      .json({ status: "Error", msg: "Error interno del servidor" });
   }
 }
 
 async function createProduct(req, res) {
+  const body = req.body;
+  let product = await productsService.createProduct(body);
   try {
-    console.log("Hola");
-    const body = req.body;
-    const product = await productDAO.create(body);
     res.status(201).json({ status: "ok", product });
     console.log("Producto agregado con exito!");
-  } catch (error) {
-    console.log(error);
+  } catch {
     res
       .status(500)
       .json({ status: "error", msg: "Error interno del servidor" });
@@ -67,13 +51,12 @@ async function createProduct(req, res) {
 }
 
 async function updateProduct(req, res) {
+  const { id } = req.params;
+  const body = req.body;
+  let product = await productsService.updateProduct(id, body);
   try {
-    const { id } = req.params;
-    const body = req.body;
-    const product = await productDAO.update(id, body);
     res.status(200).json({ status: "ok", product });
-  } catch (error) {
-    console.log(error);
+  } catch {
     res
       .status(500)
       .json({ status: "error", msg: "Error interno del servidor" });
@@ -81,6 +64,27 @@ async function updateProduct(req, res) {
 }
 
 async function deleteProduct(req, res) {
+  const { id } = req.params;
+  let product = await productsService.deleteProduct(id);
+  try {
+    if (product === null)
+      return res.status(404).json({
+        status: "error",
+        msg: `No existe el producto`,
+      });
+    return res.status(200).json({
+      status: "OK",
+      msg: `El producto  ha sido eliminado con éxito`,
+    });
+  } catch {
+    res
+      .status(500)
+      .json({ status: "error", msg: "Error interno del servidor" });
+  }
+  //res.status(200).json();
+}
+
+/*async function deleteProduct(req, res) {
   try {
     const { id } = req.params;
     const product = await productDAO.deleteOne({ _id: id });
@@ -100,7 +104,7 @@ async function deleteProduct(req, res) {
       .json({ status: "error", msg: "Error interno del servidor" });
   }
 }
-
+*/
 export default {
   getProductsAll,
   getProductBy,

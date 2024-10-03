@@ -25,7 +25,7 @@ btnRegister.addEventListener("click", async (e) => {
     role: inputRole.value.trim(),
   };
 
-  let respuesta = await fetch("/api/sessions/registro", {
+  let respuesta = await fetch("/api/sessions/register", {
     method: "post",
     headers: {
       "Content-Type": "application/json",
